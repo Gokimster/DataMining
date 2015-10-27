@@ -14,9 +14,16 @@ namespace DataMining
             //1-NN ACUURACY//
             //-------------//
             // spambase accuracy is 83.047163660073892
+            // spambase spam accuracy is 78.488692774407056
+            // spambase nonspam accuracy is 86.011477761836446
+            // spambase minmax accuracy is 91.219300152140832
+            // spambase min maxnonspam accuracy is 92.898134863701571
+            // spambase minamx spam accuracy is 88.637617209045786
             // eyeMinMaxed accuracy is 85.682819383259911
+            // eyeMinMaxed accuracy for class 1 eye closed is 85.878489326765191
+            // eyeMinMaxed accuracy for class 1 eye closed is 85.524568393094285
             // eyeReduced accuracy is 56.020558002936859
-            // spambaseReduced accuracy is 42.83851336665942
+            // spambaseReduced accuracy is 88.196359624931048
 
             //Distribution//
             //------------//
@@ -34,10 +41,25 @@ namespace DataMining
             //Spambase field 4, Class 0: 99, 0, 0, 0, 0 // Class 1: 98, 0, 0, 0, 1
             //Spambase field 5, Class 0: 82, 4, 3, 2, 6 // Class 1: 44, 12, 10, 7, 24
             //Selecting fields 3 and 5 
+            //MIN MAXED
+            //Spambase field 1, Class 0: 97, 1, 0, 0 ,0 // Class 1: 97, 2, 0, 0 , 0 
+            //Spambase field 2, Class 0: 98, 0, 0, 0 ,1 // Class 1: 99, 0, 0, 0 , 0
+            //Spambase field 3, Class 0: 93, 4, 1, 0, 0 // Class 1: 89, 9, 0, 0, 0
+            //Spambase field 4, Class 0: 100, 0, 0, 0, 0 // Class 1: 99, 0, 0, 0, 0
+            //Spambase field 5, Class 0: 98, 1, 0, 0, 0 // Class 1: 96, 3, 0, 0, 0
 
             //minMaxNormalize();
+            //do5BinDistribution(0, 0);
+            //do5BinDistribution(1, 0);
+            //do5BinDistribution(0, 1);
+            //do5BinDistribution(1, 1);
+            //do5BinDistribution(0, 2);
+            //do5BinDistribution(1, 2);
+            //do5BinDistribution(0, 3);
+            //do5BinDistribution(1, 3);
+            //do5BinDistribution(0, 4);
             //do5BinDistribution(1, 4);
-            double x = getAccuracy();
+            double x = getAccuracy(1);
             //selectFields(2, 4);
             Console.WriteLine("done");
         }
@@ -83,6 +105,28 @@ namespace DataMining
                 }
             }
             return 100 * accuracy / fileContent.Count;
+        }
+
+        private static double getAccuracy(int classValue)
+        {
+            double accuracy = 0;
+            int noElements = 0;
+            for (int i = 0; i < fileContent.Count; i++)
+            {
+                if (Convert.ToInt32(fileContent[i][fileContent[i].Length - 1]) == classValue)
+                {
+                    noElements++;
+                    if (isClosestAccurate(i))
+                    {
+                        accuracy++;
+                    }
+                    else
+                    {
+                        Console.WriteLine(i + " is not accurate");
+                    }
+                }
+            }
+            return 100 * accuracy / noElements;
         }
 
         private static bool isClosestAccurate(int lineNo)
@@ -131,7 +175,7 @@ namespace DataMining
 
         private static void minMaxNormalize()
         {
-            StreamWriter writer = new StreamWriter(@"..\\..\\doNotOverrite.arff");
+            StreamWriter writer = new StreamWriter(@"..\\..\\don'toverride.data");
             int noColumns = fileContent[0].Length - 1;
             double[] mins = new double[noColumns];
             double[] maxes = new double[noColumns];
@@ -226,28 +270,29 @@ namespace DataMining
         {
             int[] noOfElements = new int[5];
             int noOfClassFields = 0;
+            double maxofCol = 0.2;//(double)findMaxOfColumn(fieldNumber);
             foreach(var line in fileContent)
             {
                 if (Convert.ToDouble(line[line.Length - 1]) == classValue)
                 {
                     noOfClassFields++;
                     double value = Convert.ToDouble(line[fieldNumber]);
-                    if(value < 0.2)
+                    if(value < (maxofCol * 1/5))
                     {
                         noOfElements[0]++;
                     }else
                     {
-                        if(value < 0.4)
+                        if(value < (maxofCol* 2/5))
                         {
                             noOfElements[1]++;
                         }else
                         {
-                            if(value < 0.6)
+                            if(value < (maxofCol * 3 / 5))
                             {
                                 noOfElements[2]++;
                             }else
                             {
-                                if(value < 0.8)
+                                if(value < (maxofCol * 4 / 5))
                                 {
                                     noOfElements[3]++;
                                 }else
