@@ -10,29 +10,35 @@ namespace DataMining
         public static List<String[]> fileContent = new List<string[]>();
         static void Main(string[] args)
         {
-            initFile("..\\..\\spambase.data");
+            initFile("..\\..\\spambaseReduced.data");
             //1-NN ACUURACY//
             //-------------//
             // spambase accuracy is 83.047163660073892
             // eyeMinMaxed accuracy is 85.682819383259911
+            // eyeReduced accuracy is 56.020558002936859
+            // spambaseReduced accuracy is 42.83851336665942
 
             //Distribution//
             //------------//
+            //field - 1 to get index in ist//
             //EyeMinMaxed field 10, Class 0: 3, 72, 21, 1, 0 // Class 1: 2, 66, 27, 2, 0
             //EyeMinMaxed field 11, Class 0: 2, 27, 64, 4, 1 // Class 1: 0, 25, 65, 6, 2
             //EyeMinMaxed field 12, Class 0: 1, 52, 40, 3, 1 // Class 1: 0, 42, 51, 5, 1
             //EyeMinMaxed field 13, Class 0: 1, 30, 63, 3, 0 // Class 1: 0, 26, 66, 5, 0
             //EyeMinMaxed field 14, Class 0: 2, 44, 45, 5, 1 // Class 1: 0, 32, 57, 8, 0 
+            //Selecting fields 12 and 14
             //------------//
             //Spambase field 1, Class 0: 90, 3, 1, 1, 2 // Class 1: 76, 7, 8, 3, 4 
             //Spambase field 2, Class 0: 93, 2, 0, 0, 3 // Class 1: 73, 9, 8, 2, 5
             //Spambase field 3, Class 0: 77, 6, 4, 2, 8 // Class 1: 43, 14, 14, 11, 16
             //Spambase field 4, Class 0: 99, 0, 0, 0, 0 // Class 1: 98, 0, 0, 0, 1
-            //Spambase field 5, Class 0: 82, 4, 3, 2, 6 // Class 1: 98, 0, 0, 0, 1
+            //Spambase field 5, Class 0: 82, 4, 3, 2, 6 // Class 1: 44, 12, 10, 7, 24
+            //Selecting fields 3 and 5 
 
             //minMaxNormalize();
-            do5BinDistribution(1, 4);
-            //double x = getAccuracy();
+            //do5BinDistribution(1, 4);
+            double x = getAccuracy();
+            //selectFields(2, 4);
             Console.WriteLine("done");
         }
 
@@ -50,6 +56,16 @@ namespace DataMining
                     fileContent.Add(line);
                 }
             }
+        }
+
+        private static void selectFields(int field1, int field2)
+        {
+            StreamWriter writer = new StreamWriter(@"..\\..\\spambaseReduced.data");
+            foreach(var line in fileContent)
+            {
+                writer.WriteLine(line[field1] + "," + line[field2] + "," + line[line.Length - 1]);
+            }
+            writer.Close();
         }
 
         private static double getAccuracy()
@@ -115,7 +131,7 @@ namespace DataMining
 
         private static void minMaxNormalize()
         {
-            StreamWriter writer = new StreamWriter(@"..\\..\\eyeMinMaxed.arff");
+            StreamWriter writer = new StreamWriter(@"..\\..\\doNotOverrite.arff");
             int noColumns = fileContent[0].Length - 1;
             double[] mins = new double[noColumns];
             double[] maxes = new double[noColumns];
